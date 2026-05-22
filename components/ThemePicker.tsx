@@ -28,7 +28,7 @@ export default function ThemePicker({ accent, onAccentChange, theme }: ThemePick
   const activePreset = THEME_PRESETS.find((p) => p.hex.toUpperCase() === accent.toUpperCase());
 
   return (
-    <div ref={rootRef} style={{ position: "fixed", top: 10, right: 10, zIndex: 100 }}>
+    <div ref={rootRef} className="theme-picker" style={{ position: "fixed", top: 10, right: 10, zIndex: 100 }}>
       <button
         type="button"
         onClick={() => setOpen((o) => !o)}
@@ -62,6 +62,7 @@ export default function ThemePicker({ accent, onAccentChange, theme }: ThemePick
 
       {open && (
         <div
+          className="theme-picker__panel"
           style={{
             position: "absolute",
             top: "calc(100% + 8px)",
