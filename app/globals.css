@@ -16,6 +16,87 @@ input[type="range"]::-webkit-slider-thumb {
   -webkit-appearance: none;
 }
 
+/* ── Touch-friendly sliders ── */
+.lab-slider__hit {
+  position: relative;
+  height: 44px;
+  display: flex;
+  align-items: center;
+}
+
+.lab-slider__track {
+  position: relative;
+  width: 100%;
+  height: 2px;
+}
+
+.lab-slider__thumb {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  pointer-events: none;
+}
+
+.lab-slider__input {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  margin: 0;
+  opacity: 0;
+  cursor: ew-resize;
+  touch-action: none;
+}
+
+.lab-slider__input::-webkit-slider-runnable-track {
+  height: 44px;
+  background: transparent;
+}
+
+.lab-slider__input::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  width: 44px;
+  height: 44px;
+  background: transparent;
+  cursor: ew-resize;
+}
+
+.lab-slider__input::-moz-range-track {
+  height: 44px;
+  background: transparent;
+  border: none;
+}
+
+.lab-slider__input::-moz-range-thumb {
+  width: 44px;
+  height: 44px;
+  border: none;
+  background: transparent;
+  cursor: ew-resize;
+}
+
+/* ── Chart scrub (touch + hover) ── */
+.lab-curve-chart__plot {
+  touch-action: none;
+}
+
+.lab-curve-footer__hint--touch {
+  display: none;
+}
+
+@media (hover: none), (pointer: coarse) {
+  .lab-curve-footer__hint--hover {
+    display: none;
+  }
+
+  .lab-curve-footer__hint--touch {
+    display: inline;
+  }
+}
+
 ::-webkit-scrollbar {
   width: 3px;
 }

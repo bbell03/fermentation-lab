@@ -67,16 +67,29 @@ function Slider({ label, value, min, max, step, onChange, display, theme }: {
 }) {
   const pct = ((value - min) / (max - min)) * 100;
   return (
-    <div style={{ marginBottom: 24 }}>
+    <div className="lab-slider" style={{ marginBottom: 24 }}>
       <div style={{ display: "flex", justifyContent: "space-between", marginBottom: 8 }}>
         <span style={{ fontFamily: MONO, fontSize: 10, letterSpacing: "0.12em", color: MUTED, textTransform: "uppercase" }}>{label}</span>
         <span style={{ fontFamily: MONO, fontSize: 12, color: TEXT }}>{display}</span>
       </div>
-      <div style={{ position: "relative", height: 2, background: "#1a1a1a", borderRadius: 1 }}>
-        <div style={{ position: "absolute", left: 0, top: 0, height: "100%", width: `${pct}%`, background: theme.accent, borderRadius: 1 }} />
-        <input type="range" min={min} max={max} step={step} value={value} onChange={e => onChange(parseFloat(e.target.value))}
-          style={{ position: "absolute", inset: 0, width: "100%", height: "100%", opacity: 0, cursor: "ew-resize", margin: 0 }} />
-        <div style={{ position: "absolute", top: "50%", transform: "translateY(-50%)", left: `calc(${pct}% - 5px)`, width: 10, height: 10, borderRadius: "50%", background: theme.accent, pointerEvents: "none" }} />
+      <div className="lab-slider__hit">
+        <div className="lab-slider__track" style={{ background: "#1a1a1a", borderRadius: 1 }}>
+          <div style={{ position: "absolute", left: 0, top: 0, height: "100%", width: `${pct}%`, background: theme.accent, borderRadius: 1 }} />
+          <div
+            className="lab-slider__thumb"
+            style={{ left: `calc(${pct}% - 5px)`, background: theme.accent }}
+          />
+        </div>
+        <input
+          type="range"
+          className="lab-slider__input"
+          min={min}
+          max={max}
+          step={step}
+          value={value}
+          onChange={e => onChange(parseFloat(e.target.value))}
+          aria-label={label}
+        />
       </div>
     </div>
   );
@@ -281,8 +294,8 @@ export default function FermentationLab() {
     ? points.reduce((p, c) => Math.abs(c.hour - scrubX) < Math.abs(p.hour - scrubX) ? c : p, points[0])
     : null;
 
-  const handleChartMove = useCallback((e: { activeLabel?: string | number }) => {
-    if (e?.activeLabel != null) setScrubX(Number(e.activeLabel));
+  const handleChartMove = useCallback((state: { activeLabel?: string | number }) => {
+    if (state?.activeLabel != null) setScrubX(Number(state.activeLabel));
   }, []);
   const tempF = Math.round(tempC * 9 / 5 + 32);
 
@@ -381,9 +394,14 @@ export default function FermentationLab() {
               </div>
               <div style={{ fontSize: 10, color: MUTED, marginTop: 4 }}>{scrubPoint ? `at ${scrubPoint.hour}h` : ""}</div>
             </div>
-            <div style={{ flex: 1, minHeight: 0 }}>
+            <div className="lab-curve-chart__plot" style={{ flex: 1, minHeight: 0 }}>
               <ResponsiveContainer width="100%" height="100%">
-                <LineChart data={points} onMouseMove={handleChartMove} onMouseLeave={() => setScrubX(null)} margin={{ top: 10, right: 10, left: 0, bottom: 10 }}>
+                <LineChart
+                  data={points}
+                  onMouseMove={handleChartMove}
+                  onMouseLeave={() => setScrubX(null)}
+                  margin={{ top: 10, right: 10, left: 0, bottom: 10 }}
+                >
                   <defs>
                     <linearGradient id="lineGrad" x1="0" y1="0" x2="1" y2="0">
                       <stop offset="0%"   stopColor={theme.accent} stopOpacity={0.25} />
@@ -402,7 +420,8 @@ export default function FermentationLab() {
               </ResponsiveContainer>
             </div>
             <div className="lab-curve-footer" style={{ display: "flex", gap: 20, paddingLeft: 16, paddingTop: 12, borderTop: `1px solid #0d0d0d` }}>
-              <span style={{ fontFamily: MONO, fontSize: 9, color: "#1e1e1e" }}>HOVER TO SCRUB</span>
+              <span className="lab-curve-footer__hint lab-curve-footer__hint--hover" style={{ fontFamily: MONO, fontSize: 9, color: "#1e1e1e" }}>HOVER TO SCRUB</span>
+              <span className="lab-curve-footer__hint lab-curve-footer__hint--touch" style={{ fontFamily: MONO, fontSize: 9, color: "#1e1e1e" }}>DRAG TO SCRUB</span>
               <span style={{ fontFamily: MONO, fontSize: 9, color: "#1e1e1e" }}>{YEAST_TYPES.find(y => y.id === yeastType)?.label.toUpperCase()} · {flourProtein}% PROTEIN · {tempC}°C</span>
             </div>
           </div>
