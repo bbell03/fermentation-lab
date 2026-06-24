@@ -31,6 +31,7 @@ export default function ThemePicker({ accent, onAccentChange, theme }: ThemePick
     <div ref={rootRef} className="theme-picker" style={{ position: "fixed", top: 10, right: 10, zIndex: 100 }}>
       <button
         type="button"
+        className="theme-picker__toggle"
         onClick={() => setOpen((o) => !o)}
         aria-label="Theme spectrum"
         aria-expanded={open}
@@ -120,6 +121,7 @@ export default function ThemePicker({ accent, onAccentChange, theme }: ThemePick
                 <button
                   key={preset.id}
                   type="button"
+                  className="theme-picker__preset"
                   title={preset.label}
                   onClick={() => {
                     onAccentChange(preset.hex);
@@ -178,6 +180,7 @@ export default function ThemePicker({ accent, onAccentChange, theme }: ThemePick
           </div>
 
           <label
+            className="theme-picker__custom"
             style={{
               display: "flex",
               alignItems: "center",

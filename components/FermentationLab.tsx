@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useCallback, useEffect, useMemo } from "react";
+import { useState, useCallback, useEffect, useMemo, useRef } from "react";
 import {
   LineChart, Line, XAxis, YAxis, Tooltip, ResponsiveContainer, ReferenceLine,
   AreaChart, Area,
@@ -245,6 +245,7 @@ export default function FermentationLab() {
   const [tempC,        setTempC]        = useState(22);
   const [hours,        setHours]        = useState(24);
   const [scrubX,       setScrubX]       = useState<number | null>(null);
+  const plotRef = useRef<HTMLDivElement>(null);
 
   /* sensor state */
   const [sensors, setSensors]   = useState<Sensor[]>(INITIAL_SENSORS);
@@ -294,9 +295,13 @@ export default function FermentationLab() {
     ? points.reduce((p, c) => Math.abs(c.hour - scrubX) < Math.abs(p.hour - scrubX) ? c : p, points[0])
     : null;
 
-  const handleChartMove = useCallback((state: { activeLabel?: string | number }) => {
-    if (state?.activeLabel != null) setScrubX(Number(state.activeLabel));
-  }, []);
+  const handlePlotPointer = useCallback((clientX: number) => {
+    const el = plotRef.current;
+    if (!el) return;
+    const { left, width } = el.getBoundingClientRect();
+    const ratio = Math.max(0, Math.min(1, (clientX - left) / width));
+    setScrubX(ratio * hours);
+  }, [hours]);
   const tempF = Math.round(tempC * 9 / 5 + 32);
 
   /* summary stats for dashboard header */
@@ -394,12 +399,16 @@ export default function FermentationLab() {
               </div>
               <div style={{ fontSize: 10, color: MUTED, marginTop: 4 }}>{scrubPoint ? `at ${scrubPoint.hour}h` : ""}</div>
             </div>
-            <div className="lab-curve-chart__plot" style={{ flex: 1, minHeight: 0 }}>
+            <div
+              ref={plotRef}
+              className="lab-curve-chart__plot"
+              style={{ flex: 1, minHeight: 0 }}
+              onPointerMove={(e) => handlePlotPointer(e.clientX)}
+              onPointerLeave={() => setScrubX(null)}
+            >
               <ResponsiveContainer width="100%" height="100%">
                 <LineChart
                   data={points}
-                  onMouseMove={handleChartMove}
-                  onMouseLeave={() => setScrubX(null)}
                   margin={{ top: 10, right: 10, left: 0, bottom: 10 }}
                 >
                   <defs>
